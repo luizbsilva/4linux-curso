@@ -152,7 +152,7 @@ Arquivos utilizado para o prendizado para os seguintes cursos.
     -✔ Teste de qualidade;
 
 - [ ] Sonatype Nexus;
-    >✔ O que utilizar?;
-    >✔ Instalação;
-    >✔ Linguagens e plataformas suportadas;
-    >✔ Boas práticas;
+    -✔ O que utilizar?;
+    -✔ Instalação;
+    -✔ Linguagens e plataformas suportadas;
+    -✔ Boas práticas;
