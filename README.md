@@ -5,9 +5,9 @@ Arquivos utilizado para o prendizado para os seguintes cursos.
 ### Infraestrutura Ágil com Práticas DevOps    
 #### Temas Abordados:
 - [✔] Aula 021 – Conceitos DevOps;
-    -✔ A História do DevOps;
-    -✔ Infraestrutura como Código;
-    -✔ Conhecendo as Ferramentas;
+    - ✔ A História do DevOps;
+    - ✔ Infraestrutura como Código;
+    - ✔ Conhecendo as Ferramentas;
 - [✔] Aula 02 – Desenvolvimento de ambientes Virtuais com Hashicorp Vagrant;
     -✔ Virtualização com Vagrant;
     -✔ Definição de máquinas virtuais;
@@ -152,7 +152,7 @@ Arquivos utilizado para o prendizado para os seguintes cursos.
     -✔ Teste de qualidade;
 
 - [ ] Sonatype Nexus;
-    -✔ O que utilizar?;
-    -✔ Instalação;
-    -✔ Linguagens e plataformas suportadas;
-    -✔ Boas práticas;
+    >✔ O que utilizar?;
+    >✔ Instalação;
+    >✔ Linguagens e plataformas suportadas;
+    >✔ Boas práticas;
