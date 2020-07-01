@@ -1,0 +1,30 @@
+1 - Istalar dependencias 
+$ sudo apt-get install crul openssh-server ca-certificates postfix
+2 - Baixar pacotes do GitLab
+$ wget   https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh
+3 - Atualizando script
+$ bash script.deb.sh
+4 - Instalando pacotes do GitLab
+$ apt-get install gitlab-ce -y
+5 - Alterar url conexao
+$ sudo vim /etc/gitlab/gitlab.rb "Toda alteração no arquivo rodar o comando 6"
+    Alterar os itens(Itens para deixar o gitlab mas leve não serão necessarios no curso)
+        external_url 'http://192.168.88.10' "Ou IP/URL de conexão que esta o Servidor GitLab"        
+        alertmanager['enable'] = false
+        gitlab_monitor['enable'] = false
+        node_exporter['enable'] = false
+        postgres_exporter['enable'] = false
+        prometheus['enable'] = false
+        redis_exporter['enable'] = false
+        grafana['enable'] = false
+        gitlab_exporter['enable'] = false
+        logrotate['enable'] = false
+6 - Reconfigurar Gitlab            
+$  sudo sudo gitlab-ctl reconfigure
+7 - Acessar o 'http://192.168.88.10' "Ou IP/URL de conexão que esta o Servidor GitLab"
+8 - Cadastar senha para usuario root
+9 - Efetuar Login 
+    user: root
+    pasword: cadastrado no passo anterior
+10 - Verificar status do GitLab
+$ gitlab-ctl status
