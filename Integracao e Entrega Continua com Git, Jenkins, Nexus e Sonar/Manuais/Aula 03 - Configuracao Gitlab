@@ -1,0 +1,19 @@
+ 1 - Criar Usuario
+    Acessar Admin Area -> new user
+    -> adicionar dados obrigatorio como nome e login
+
+2 - Criar grupo de projetos
+
+3 - Adicionar usuario dentro do grupo
+
+4 - Criar projeto no grupo
+
+5 - Projeter Branchs de pushs
+
+6 - criar modulos
+    $ git submodule add {{ENDERECO_PROJETO}} {{NOME_MODULO}}
+      -> navegar para pasta do modulo criado
+        $ cd {{NOME_MODULO}}    
+      -> realizar commmit e pushs das alterções
+    -> voltar a pasta principal do projeto
+        -> realizar commit para commitar o modulo criado    
