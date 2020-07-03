@@ -1,0 +1,36 @@
+1 - Istalar dependencias 
+ 1.1 - Instalar JAVA/VIM/GIT caso seja o debian/buster64
+  $ apt install openjdk-11-jdk vim git -y
+  ou a box seja a "debian/stretch64"
+  $ apt install openjdk-8-jdk vim git -y
+
+2 - Baixar pacotes do Jenkins
+ $ wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+ $ sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+ $ sudo apt-get update
+
+3 - Instalar Jenkins 
+ $ sudo apt-get install jenkins-y
+
+4 - Iniciar serviço e verificar status 
+ $ sudo systemctl start jenkins
+ $ sudo systemctl status jenkins
+
+5 - Acessar a url no navegador
+ http://192.168.88.20:8080/
+
+6 - pegar password inicial no arquivo
+ $ cat  /var/lib/jenkins/secrets/initialAdminPassword
+
+7 - Apos digitar a senha confirmar dados do usuario ADM e senha e depois confirmar a URL de acesso ao jenkins,
+    depois clicar em start jenkins
+    
+8 - Ir em Gerenciar Plugind e instalar os seguintes plugins
+  - SonarQube Scanner
+  - Nexus Platform
+  - Pipeline Utility Steps
+  - Blue Ocean
+  - GitLab
+
+9 - Depois clicar em Instalar sem restart
+
