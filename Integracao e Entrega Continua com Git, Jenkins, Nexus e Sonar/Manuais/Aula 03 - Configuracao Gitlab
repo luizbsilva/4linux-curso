@@ -8,7 +8,13 @@
 
 4 - Criar projeto no grupo
 
-5 - Projeter Branchs de pushs
+5 - Proteger Branchs de pushs
+
+7 - Configurar OutBound Requests
+  -> Admin Area
+   -> Settings -> Network
+    -> OutBOund Requests
+     -> Marcar o check "Allow requests to the local network from web hooks and services"
 
 6 - criar modulos
     $ git submodule add {{ENDERECO_PROJETO}} {{NOME_MODULO}}

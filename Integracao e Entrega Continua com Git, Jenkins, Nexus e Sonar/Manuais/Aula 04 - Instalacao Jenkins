@@ -16,7 +16,7 @@
  $ sudo systemctl start jenkins
  $ sudo systemctl status jenkins
 
-5 - Acessar a url no navegador
+5 - Acessar a url no navegador+
  http://192.168.88.20:8080/
 
 6 - pegar password inicial no arquivo
@@ -33,4 +33,3 @@
   - GitLab
 
 9 - Depois clicar em Instalar sem restart
-
