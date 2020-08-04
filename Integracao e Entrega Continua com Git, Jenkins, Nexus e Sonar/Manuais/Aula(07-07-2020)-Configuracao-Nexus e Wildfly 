@@ -1,0 +1,115 @@
+1 - Instalar Nexus na maquina pipeline
+    $ docker run -dti --name nexus -p 8081:8081 --restart always sonatype/nexus3:latest
+2  - Acessar a url do servidor  "http://192.168.88.20:8081"
+
+3 - Ir em Sign 
+    Username : "admin"
+    Para pegar senha de adim
+    dentro da minha instalada o nexus usar o comando
+    $ docker exec nexus cat /nexus-data/admin.password
+
+3 - alterar senha do admin -> selecionar Disable anonymous access
+4 - Criar Role de acesso
+    Ir em Server Administration Server and Configuration -> Security -> Roles -> Create role -> nexus role
+      Role Id:
+      Rone Name:
+      Role descripiont:
+      Privileges
+        Selecionar os privilegios para a role
+          nx-repository-admin-maven2-maven-release-*
+          nx-repository-view-maven2-*
+          nx-search-read
+    Clicar em Create Role
+
+5 - Criar Usuario de acesso
+    Ir em Server Administration Server and Configuration -> Security -> Users -> Create local User -> 
+      ID:
+      Fisrt Name:
+      Last Name:
+      Email:
+      password:
+      Confirm password:
+      status:
+      Role
+
+6 Delete Repositore maven-releases
+
+7 Criar Blob Stores
+  Ir em Blob Stores -> Create Blob Stores
+    Type: File or S3
+    Name: nome Blob Store
+    CLicar em Create Blob Store
+8 - Criar novo Repositore
+  Ir em Repositories -> Create Repositore
+    Selecionar o Recipe -> maven2(hosted)
+    Name:
+    Version policy: release
+    Layout police: strict
+    Storage
+      Blob Store: Selecionaro Blob store criado
+    Hosted
+      Deployment policy: Disable redeploy
+    cliclar em create repository
+
+9 - No Jenkins configurar o Nexus
+  Ir em Jenkins -> Manage Jenkins -> Configure System
+      Sonatype Nexus ->
+       Em Nexus Repository Manager Servers -> add Nexus Repository Manager Server -> selecionar -> Nexus Repository Manager 3.x Server
+       Display Name:
+       Server ID:
+       Server URL: Url servidor nexus
+       Add credencial nexus
+Na maquina pipeline 
+10 - Intalar o Java 
+    $ sudo apt install openjdk-8-jdk vim git -y
+11 - Baixar o servidor wildfly   
+     $ curl -OL https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz
+12 - Descompactar e mover os arquivos para pasta /opt
+    $ tar -xf wildfly-19.1.0.Final.tar.gz -C /opt/
+13 - Confirgurar servidor
+    Ir para a pasta 
+      $ cd /opt/wildfly-19.1.0.Final/
+    Editar o arquivo
+      $ vim standalone/configuration/standalone.xml
+      Digitar o comando shift+G para ir para o final do arquivo
+        digitar o comando
+         :%s/127.0.0.1/{{ENDERECO_SERVIDOR}}/g(Endereo do servidor)   no caso   192.168.88.30 
+    Adicionar Usuario
+      $ ./bin/add-user.sh
+      What type of user do you wish to add? 
+        a) Management User (mgmt-users.properties) 
+        b) Application User (application-users.properties) 
+        (a): a
+      Enter the details of the new user to add.
+        Using realm 'ManagementRealm' as discovered from the existing property files.
+        Username : admin
+      User 'admin' already exists and is disabled, would you like to... 
+        a) Update the existing user password and roles 
+        b) Enable the existing user 
+        c) Type a new username
+        (a): a
+      Password recommendations are listed below. To modify these restrictions edit the add-user.properties configuration file.
+        - The password should be different from the username
+        - The password should not be one of the following restricted values {root, admin, administrator}
+        - The password should contain at least 8 characters, 1 alphabetic character(s), 1 digit(s), 1 non-alphanumeric symbol(s)
+        Password :  {{DIGITAR_SENHA}}
+        WFLYDM0102: Password should have at least 1 non-alphanumeric symbol.
+        Are you sure you want to use the password entered yes/no? yes
+      Re-enter Password : {{CONFIRMAR_SENHA}} 
+      What groups do you want this user to belong to? (Please enter a comma separated list, or leave blank for none)[  ]: {{DEFINIR GRUPO EM BRANCO}}
+      Is this new user going to be used for one AS process to connect to another AS process? 
+        e.g. for a slave host controller connecting to the master or for a Remoting connection for server to server EJB calls.
+        yes/no? no {{DESLIGAR EJB}}
+    Iniciar servidor    
+      $./bin/standalone.sh
+    Acessar o Endereco do servidor
+      
+
+
+
+  
+  
+  
+
+
+

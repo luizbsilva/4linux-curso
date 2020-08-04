@@ -1,28 +1,20 @@
 1 - Criando PipeLine
     1.1 - Acessar pagina do Jenkins
-        -> New Item -> nome do item -> selecionar PipeLine -> clicar em OK
+        -> New Item -> nome do item -> selecionar PipeLine MultBranch -> clicar em OK
     1.2 - Adicionar descrição do PipeLine
-    1.3 - ir ate a opção PipeLine 
-        -> na opção Definition selecionar "PipeLine script from SCM"
-            Em:
-             -> SCM - selecionar o scm de sua escolha, no meu caso usarei o GIT
-                -> Repositories
-                    -> Repository URL: {{URL_PROJETO}}
-                    -> Credentials: credenciais de acesso ao repositorio
-2 - No GitLab criar o arquivo Jenkisfile e criar o script com a PipeLine
+    1.3 - ir ate a opção Branch Sources
+        -> add souce -Selecionar o servidor de vercionamento
+            Project Repository: url projeto
+            Credentials: Selecionar ou cadastrar uma nova Credencial 
+        
+2 - No GitLab criar o arquivo Jenkinsfile e criar o script com a PipeLine
 
 3 - No Jenkins Configurar o PROJETO
-    -> na aba "Build Triggers"
-        -> habilitar o check "Build when a change is pushed to GitLab. GitLab webhook"
-            -> clicar em Advanced
-                -> em Secret Token clicar em Generate.
-    -> clicar em Apply
     -> No GitLab
       -> Apos Selecionar o projeto ir em:
          -> Settings -> Webhooks
-           -> No campo URL - Adicionar a url contida no campo "Build when a change is pushed to GitLab. GitLab webhook""
-              do passo anterior
-           -> Em Secret Token "Adicionar o token do passo anterior"
+           -> No campo URL - Adicionar a url contida do projeto no jenkins
+           -> Em Secret Token não necessita senha
            -> clicar em add webhook
            OBS.: irar criar uma item no final da linha e a mensagem de http status 200 significando que criou e conectou 
                  corretamente com o projeto do jenkins, no botão de Test selecione a opção push events

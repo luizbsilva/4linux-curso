@@ -1,3 +1,4 @@
+ --- Maquina scmIntegration ---
  1 - Criar Usuario
     Acessar Admin Area -> new user
     -> adicionar dados obrigatorio como nome e login
@@ -13,7 +14,7 @@
 7 - Configurar OutBound Requests
   -> Admin Area
    -> Settings -> Network
-    -> OutBOund Requests
+    -> OutBound Requests
      -> Marcar o check "Allow requests to the local network from web hooks and services"
 
 6 - criar modulos

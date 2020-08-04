@@ -1,0 +1,170 @@
+ 
+
+ 
+
+​
+​	
+ 
+Thank you for attending this meeting. Here are the notes that were taken:
+
+7397 4524 Integração e Entrega Continua com Git, Jenkins, Nexus e Sonar
+Friday, July 3, 2020
+7:00 PM - 10:00 PM Sao Paulo
+
+ 
+​
+​	
+ 
+Public Meeting Notes:
+Pipeline:
+pipeline {
+
+    agent any
+ /*
+  Isso eh comentario
+*/   
+
+
+    parameters {
+        choice(name:'DEPLOY', choices:['DEV','HOMOLOG','PROD'], description:'Escolha de ambiente para deploy')
+        string(name:'NOME', defaultValue:'')
+        text(name: 'PAPEL', defaultValue: '', description: 'Entre com a role do usuario')
+        booleanParam(name: 'VERBOSE', defaultValue: true, description: 'Defina o verbose')
+    }
+
+
+    stages{
+        stage('List files'){
+            steps{
+                sh 'ls -1'
+                sh 'cat README.md'
+                echo "${DEPLOY}"
+            }
+        }
+
+     stage('Print env'){
+         
+         when{
+            allOf {
+              environment name: 'DEPLOY', value: 'HOMOLOG'
+              environment name: 'NOME', value: 'JULIO'
+            }
+         }
+    steps{
+        echo 'Deploy em ambiente de homologacao'
+    }
+    }
+    }
+
+}
+
+Pipeline Syntax Generator: http://192.168.88.20:8080/pipeline-syntax/
+
+Teste de Infraestrutura com Chef InSpec
+
+Email de retorno na maquina pipeline:
+cat /var/log/maillog 
+ou
+cat /var/mail/root
+
+
+
+Pipeline em Paralelo:
+pipeline {
+
+    agent any
+ /*
+  Isso eh comentario
+*/   
+
+
+    parameters {
+        choice(name:'DEPLOY', choices:['DEV','HOMOLOG','PROD'], description:'Escolha de ambiente para deploy')
+        string(name:'NOME', defaultValue:'')
+        text(name: 'PAPEL', defaultValue: '', description: 'Entre com a role do usuario')
+        booleanParam(name: 'VERBOSE', defaultValue: true, description: 'Defina o verbose')
+    }
+
+    environment {
+      varFile = 'arq_'+"${DEPLOY}"
+    }
+
+    options {
+      timeout(time: 20, unit: 'SECONDS')
+      skipDefaultCheckout()
+    }
+    
+    /*tools {
+      maven mvn330
+    }
+    */
+    stages{
+        stage('List files'){
+            steps{
+                cleanWs()
+                sh 'mkdir projeto'
+                dir('projeto'){
+                    git changelog: false, credentialsId: 'e68e33c4-1528-408b-aa06-ecbd1976e1b6', poll: false, url: 'http://192.168.88.10/devops/gittest.git'
+                    sh 'ls -1'
+                    echo "${DEPLOY}"
+                    echo "${env.varFile}"
+                }
+                sh 'cat README.md'
+            }
+        }
+
+        stage('Acoes em Paralelo'){
+          parallel{
+            stage('UNIT TEST'){
+              steps{
+                echo 'unit testing....'
+              }
+            }
+            stage('UAT'){
+              steps{
+                echo 'user acceptance test ...'
+              }
+            }
+            stage('END-TO-END'){
+              steps{
+                echo 'end-to-end testing '
+              }
+            }
+          }
+        }
+
+     stage('Print env'){
+         
+         when{
+            allOf {
+              environment name: 'DEPLOY', value: 'HOMOLOG'
+              environment name: 'NOME', value: 'JULIO'
+              environment name: 'PAPEL', value: 'developer'
+              environment name: 'VERBOSE', value: 'false'
+            }
+            
+         }
+    steps{
+        echo 'Deploy em ambiente de homologacao'
+    }
+    }
+    }
+
+    post {
+    
+        always {
+            echo "Post-action ALWAYS"
+        }
+        
+        success {
+            mail to: 'root@localhost', subject: "${BUILD_TAG} finalizada com SUCESSO", body: "Build finalizada."
+        }
+        
+        failure {
+            mail to: 'root@localhost', subject: "${BUILD_TAG} finalizada com FALHA", body: "Build finalizada."
+        }
+        
+    
+    }
+
+}

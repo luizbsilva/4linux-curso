@@ -9,7 +9,7 @@ machines = {
 }
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/buster64"
+  config.vm.box = "debian/stretch64"
   
   machines.each do |name,conf|
     config.vm.define "#{name}" do |machine|

@@ -1,0 +1,93 @@
+Alternativas de CI para o Jenkins:
+
+Drone CI
+Circle CI
+
+GoCD
+Spinnaker
+JenkinsX
+GitlabCI
+TravisCI (4Linux DevOps Essentials)
+
+Jenkins utiliza DSL Groovy
+
+Instalação do Jenkins:
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update
+sudo apt-get install jenkins -y
+
+
+Status do Jenkins: systemctl status jenkins
+Restart do Jenkins: systemctl restart jenkins
+
+
+Plugins:
+
+SonarQube Scanner
+Nexus Platform
+Pipeline Utility Steps
+Gitlab
+Blue Ocean
+
+Lista de variaveis do jenkins:
+IP_DO_JENKINS/env-vars.html/
+
+
+
+https://www.jenkins.io/doc/book/pipeline/syntax/
+
+
+Status do Jenkins: systemctl status jenkins
+Restart do Jenkins: systemctl restart jenkins
+
+
+Plugins:
+
+SonarQube Scanner
+Nexus Platform
+Pipeline Utility Steps
+Gitlab
+Blue Ocean
+
+Lista de variaveis do jenkins:
+IP_DO_JENKINS/env-vars.html/
+
+
+Pipeline:
+
+pipeline {
+
+    agent any
+ /*
+  Isso eh comentario
+*/   
+
+
+    parameters {
+        choice(name:'DEPLOY', choices:['DEV','HOMOLOG','PROD'], description:'Escolha de ambiente para deploy')
+    }
+
+
+    stages{
+        stage('List files'){
+            steps{
+                sh 'ls -1'
+                sh 'cat README.md'
+                echo '${DEPLOY}'
+            }
+        }
+
+    	stage('Print env'){
+		    steps{
+		        sh 'printenv'
+		    }
+	    }
+    }
+
+}
+
+Ova do Instrutor do início do dia:
+
+https://drive.google.com/file/d/1rQTqO8LfwHzWwESJo_92OW2m5JLjPNL0/view?usp=sharing 

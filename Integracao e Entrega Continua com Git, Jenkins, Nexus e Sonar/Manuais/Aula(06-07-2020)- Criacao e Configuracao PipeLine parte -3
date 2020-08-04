@@ -1,0 +1,26 @@
+1 - Configurar Maven ou Gradle
+    Ir em -Manage Jenkins -> Global Tool Configuration -> Maven -> Maven installations
+        Adicionar nome e versão
+
+3 - Instalar container do sonarquene na maquina pipeline
+    $ docker run -dti --name sonarqube -p 9000:9000 --restart always sonarqube
+
+4 - na interface do sonarqube criar um novo projeto
+    Gerar token
+    nome para token clicar em generete token
+    copiar token
+    $  94b0ec879a68241ebcb8f1ad0f5eb074a63ac468
+5 - Vincular Jenkins com Sonarqube    
+    Jenkins -> Configure System -> 
+        Ir em SonarQube servers
+            marcar "Enable injection of SonarQube server configuration as build environment variables"
+            Clicar em "Add SonarQube"
+            Name: "Nome"
+            Server URL: "Endereçco Server Sonar"
+            Server authentication token: "Autenticação do sonar" --Secret Text
+6 - Ativer Webhooks Sonar
+    No SonarQube ir em
+        Project Settings -> Webhooks -> Create
+            Nome: "Nome Webhook"
+            URL: URL do projeto no Jenkins
+            Não é necessario gerar o Secret

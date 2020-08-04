@@ -1,0 +1,160 @@
+ 
+Exercício 02:
+
+Utilizando o repositório abaixo, crie um estrutura GitFlow com branch protegidas.
+
+https://github.com/jrballot/hw-springboot.git
+
+Integre o repositório do Gitlab com um job multibranch pipeline do Jenkins.
+
+O jenkinsfile deve possuir os seguites estágios:
+
+- Build & Test
+- Sonarqube Analysis
+- Sonarqube Results
+- Nexus Deploy
+- Homolog Deploy (somente quando branch for release)
+- Production Deploy (somente quando branch for master)
+
+Use echo nesse primeiro momento.
+
+Pipeline do ex2:
+pipeline {
+
+  agent any
+
+  stages {
+
+    stage("Build & Test"){
+      steps{
+        echo "building..."
+      }
+    }
+
+    stage("Sonarqube Analysis"){
+      steps{
+        echo "analysing..."
+      }
+    }
+
+    stage("Sonarqube Results"){
+      steps{
+        echo "Sonar result"
+      }
+    }
+
+    stage("Nexus Deploy"){
+      steps{
+        echo "deploying artefact"
+      }
+    }
+
+    stage("Homolog Deploy"){ 
+      when{
+        branch "release"
+      }
+      steps{
+        echo "deploying to homolog server"
+      }
+    }
+
+    
+    stage("Production Deploy"){ 
+      when{
+        branch "master"
+      }
+      steps{
+        echo "deploying to production server"
+      }
+    }
+
+  }
+
+  post{
+    always{
+      echo "Build ${BUILD_TAG} finalizada"
+    }
+  }
+
+}
+
+
+
+SQALE: http://www.sqale.org/
+
+Rodando Sonarqube no docker:
+docker run -dti --name sonarqube -p 9000:9000 --restart always sonarqube
+
+
+Pipeline com Build e SonarQube:
+pipeline {
+
+  agent any
+
+  tools {
+    maven  "mvn363"
+    /*
+    Outras ferramentas suportadas :
+    gradle
+    ant
+    */
+  }
+
+  stages {
+
+    stage("Build & Test"){
+     steps{
+        sh 'mvn clean package'
+      }
+    }
+
+    stage("Sonarqube Analysis"){
+      steps{
+        withSonarQubeEnv("sonar"){
+                sh "mvn sonar:sonar -Dsonar.projectKey=hw-springboot -Dsonar.projectVersions=${BUILD_ID}"
+        }
+      }
+    }
+
+    stage("Sonarqube Results"){
+      steps{
+        echo "Sonar result"
+      }
+    }
+
+    stage("Nexus Deploy"){
+      steps{
+        echo "deploying artefact"
+      }
+    }
+
+    stage("Homolog Deploy"){ 
+      when{
+        branch "release"
+      }
+      steps{
+        echo "deploying to homolog server"
+      }
+    }
+
+    
+    stage("Production Deploy"){ 
+      when{
+        branch "master"
+      }
+      steps{
+        echo "deploying to production server"
+      }
+    }
+
+  }
+
+  post{
+    always{
+      echo "Build ${BUILD_TAG} finalizada"
+    }
+  }
+
+}
+
+

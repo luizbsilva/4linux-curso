@@ -1,0 +1,174 @@
+ 
+Pipeline do início da aula:
+pipeline {
+
+  agent any
+
+  tools {
+    maven  "mvn363"
+    /*
+    Outras ferramentas suportadas :
+    gradle
+    ant
+    */
+  }
+
+  stages {
+
+    stage("Build & Test"){
+     steps{
+        sh 'mvn clean package'
+      }
+    }
+
+    stage("Sonarqube Analysis"){
+      steps{
+        withSonarQubeEnv("sonar"){
+                sh "mvn sonar:sonar -Dsonar.projectKey=hw-springboot -Dsonar.projectVersions=${BUILD_ID}"
+        }
+      }
+    }
+
+    stage("Sonarqube Results"){
+      steps{
+        timeout(time:1, unit: 'MINUTES'){
+          waitForQualityGate abortPipeline:true
+        }
+      }
+    }
+
+    stage("Nexus Deploy"){
+      steps{
+        echo "deploying artefact"
+      }
+    }
+
+    stage("Homolog Deploy"){ 
+      when{
+        branch "release"
+      }
+      steps{
+        echo "deploying to homolog server"
+      }
+    }
+
+    
+    stage("Production Deploy"){ 
+      when{
+        branch "master"
+      }
+      steps{
+        echo "deploying to production server"
+      }
+    }
+
+  }
+
+  post{
+    always{
+      echo "Build ${BUILD_TAG} finalizada"
+    }
+  }
+
+}
+
+/* =============================== */
+
+
+
+Criando container Nexux na maquina pipeline:
+
+docker run -dti --name nexus -p 8081:8081 --restart always sonatype/nexus3:latest
+
+
+Pipeline com step do Nexus3:
+pipeline {
+
+  agent any
+
+  tools {
+    maven  "mvn363"
+    /*
+    Outras ferramentas suportadas :
+    gradle
+    ant
+    */
+  }
+
+  stages {
+
+    stage("Build & Test"){
+     steps{
+        sh 'mvn clean package'
+      }
+    }
+
+    stage("Sonarqube Analysis"){
+      steps{
+        withSonarQubeEnv("sonar"){
+         sh "mvn sonar:sonar -Dsonar.projectKey=hw-springboot -Dsonar.projectVersions=${BUILD_ID}"
+}
+      }
+    }
+
+    stage("Sonarqube Results"){
+      steps{
+        timeout(time:1, unit: 'MINUTES'){
+  waitForQualityGate abortPipeline:true
+}
+      }
+    }
+
+    stage("Nexus Deploy"){
+      steps{
+        script {
+         def pom = readMavenPom file: 'pom.xml'
+         
+         nexusPublisher nexusInstanceId: 'nexus-server', \
+            nexusRepositoryId: 'maven-releases', \
+            packages: [[$class: 'MavenPackage', \
+            mavenAssetList: [[classifier: '', extension: '', \
+            filePath: "target/${pom.build.finalName}.${pom.packaging}"]], \
+            mavenCoordinate: [artifactId: "${pom.artifactId}", \
+            groupId: "${pom.groupId}", \
+            packaging: "${pom.packaging}", \
+            version: "${pom.version}"]]]
+        }
+      }
+    }
+
+    stage("Homolog Deploy"){ 
+      when{
+        branch "release"
+      }
+      steps{
+        echo "deploying to homolog server"
+      }
+    }
+
+    
+    stage("Production Deploy"){ 
+      when{
+        branch "master"
+      }
+      steps{
+        echo "deploying to production server"
+      }
+    }
+
+  }
+
+  post{
+    always{
+      echo "Build ${BUILD_TAG} finalizada"
+    }
+  }
+
+}
+
+
+
+
+Download Wildfly na maquina homolog:
+
+curl -OL https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz

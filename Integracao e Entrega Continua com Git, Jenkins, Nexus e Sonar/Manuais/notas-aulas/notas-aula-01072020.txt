@@ -1,0 +1,51 @@
+Pacotes basicos:
+
+sudo apt-get install  vim chrony apt-transport-https ca-certificates gnupg-agent software-properties-common -y
+
+Download da box do hyper:
+https://drive.google.com/file/d/1b7JwK3UwPsZIBcBP7scZOWAY3asDK1hQ/view?usp=sharing
+
+vagrant box add --name centos/7 hyperv.box
+
+vagrant up --provider hyperv
+
+
+Projeto exemplo:
+
+https://github.com/jrballot/hw-springboot.git
+
+Exercício:
+Utilizando a url abaixo:
+
+https://github.com/jrballot/hw-springboot.git
+
+
+Crie um repositório no Gitlab seguinto a estrutura do GitFlow, protegendo as branchs:
+
+ - development
+ - release
+ - master
+
+Essas branchs somente devem permitir merge pelo Dono ou Mantenedor do projeto. Crie um branch feature-a para aceitar o push.
+
+
+Gitlab.rb:
+
+external_url 'http://192.168.88.10'
+alertmanager['enable'] = false
+node_exporter['enable'] = false
+postgres_exporter['enable'] = false
+prometheus['enable'] = false
+redis_exporter['enable'] = false
+logrotate['enable'] = false
+gitlab_exporter['enable'] = false
+grafana['enable'] = false
+
+Instalando docker na SCM (Não Fazer):
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y docker-ce docker-ce-cli containerd.io
+systemctl enable docker
+systemctl start docker
+
+docker run -dit --name gitlab -p 80:80 gitlab/gitlab-ce

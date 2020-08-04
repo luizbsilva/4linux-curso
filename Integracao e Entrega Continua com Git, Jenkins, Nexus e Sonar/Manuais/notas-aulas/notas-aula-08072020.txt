@@ -1,0 +1,176 @@
+ 
+Criar par de chaves ssh na homolog:
+
+ssh-keygen -t rsa -b 4096 -N ''  -f /root/.ssh/id_rsa
+
+cd /root/.ssh/id_rsa
+
+cp id_rsa.pub authorized_keys
+
+
+
+No Jenkins instalar o plugin:
+
+SSH Agent
+
+Alterar steps do Deploy Homolog:
+
+stage("Homolog Deploy"){ 
+      when{
+        branch "release"
+      }
+      steps{
+        sshagent(['4544d25a-0624-4c38-afda-1def022765fb']){
+          sh "ssh -o StrictHostKeyChecking=no root@192.168.88.30 hostname"
+        }
+      }
+    }
+
+
+Nodo stage de deploy na Homolog:
+
+stage("Homolog Deploy"){ 
+      when{
+        anyOf{
+            branch "release"
+            branch "development"
+        }
+      }
+      steps{
+      
+        script{
+        
+            def pom = readMavenPom file: 'pom.xml'
+        
+            sshagent(['4544d25a-0624-4c38-afda-1def022765fb']){
+                sh "scp -o StrictHostKeyChecking=no ${WORKSPACE}/target/${pom.build.finalName}.${pom.packaging} root@192.168.88.30:/opt/wildfly-19.1.0.Final/standalone/deployments/"
+            }
+        }
+      }
+    }
+
+
+Para alterar a mensagem de retorno da aplicação troque o conteúdo do arquivo HelloWorldController.java, substituido o return por:
+
+String toReturn = "<img src='https://upload.wikimedia.org/wikipedia/commons/d/df/Logo4linux.png'/></p><h2>CI/CD - Git, Jenkins , SonarQube e Nexus</h1> <p><h3><marquee>SEU NOME</marquee><h3>";
+      return toReturn;
+
+
+
+Katalon:
+https://chrome.google.com/webstore/detail/katalon-recorder-selenium/ljdobmomdgdljniojadhoplhkpialdid
+
+
+
+Pipeline final:
+
+pipeline {
+
+  agent any
+
+  tools {
+    maven  "mvn363"
+    /*
+    Outras ferramentas suportadas :
+    gradle
+    ant
+    */
+  }
+
+  environment{
+    serverProduction = "192.168.88.40"
+    serverHomolog = "192.168.88.30"
+  }
+
+  stages {
+
+    stage("Build & Test"){
+     agent {
+        node {
+            label 'homolog'
+        }
+     }
+     steps{
+        sh 'mvn clean package'
+      }
+    }
+
+    stage("Sonarqube Analysis"){
+      steps{
+        withSonarQubeEnv("sonar"){
+        	sh "mvn sonar:sonar -Dsonar.projectKey=hw-springboot -Dsonar.projectVersions=${BUILD_ID}"
+	}
+      }
+    }
+
+    stage("Sonarqube Results"){
+      steps{
+        timeout(time:1, unit: 'MINUTES'){
+	  waitForQualityGate abortPipeline:true
+	}
+      }
+    }
+
+    stage("Nexus Deploy"){
+      steps{
+        script {
+         def pom = readMavenPom file: 'pom.xml'
+         
+         nexusPublisher nexusInstanceId: 'nexus-server', \
+            nexusRepositoryId: 'maven-releases', \
+            packages: [[$class: 'MavenPackage', \
+            mavenAssetList: [[classifier: '', extension: '', \
+            filePath: "target/${pom.build.finalName}.${pom.packaging}"]], \
+            mavenCoordinate: [artifactId: "${pom.artifactId}", \
+            groupId: "${pom.groupId}", \
+            packaging: "${pom.packaging}", \
+            version: "${pom.version}"]]]
+        }
+      }
+    }
+
+    stage("Homolog Deploy"){ 
+      when{
+        anyOf{
+            branch "release"
+            branch "development"
+        }
+      }
+      steps{
+      
+        script{
+        
+            def pom = readMavenPom file: 'pom.xml'
+        
+            sshagent(['4544d25a-0624-4c38-afda-1def022765fb']){
+                sh "scp -o StrictHostKeyChecking=no ${WORKSPACE}/target/${pom.build.finalName}.${pom.packaging} root@${env.serverHomolog}:/opt/wildfly-19.1.0.Final/standalone/deployments/"
+            }
+        }
+      }
+    }
+
+    
+    stage("Production Deploy"){ 
+      when{
+        branch "master"
+      }
+      steps{
+        script{
+        
+            def pom = readMavenPom file: 'pom.xml'
+            sshagent(['35f913ca-fa30-4913-b675-7ac54300a4e6']){
+                sh "scp -o StrictHostKeyChecking=no ${WORKSPACE}/target/${pom.build.finalName}.${pom.packaging} root@${env.serverProduction}:/opt/wildfly-19.1.0.Final/standalone/deployments/"
+            }
+        }
+      }
+    }
+
+  }
+
+  post{
+    always{
+      echo "Build ${BUILD_TAG} finalizada"
+    }
+  }
+
+}
