@@ -59,11 +59,11 @@
        Server ID:
        Server URL: Url servidor nexus
        Add credencial nexus
-Na maquina pipeline 
+Na maquina homolog 
 10 - Intalar o Java 
     $ sudo apt install openjdk-8-jdk vim git -y
 11 - Baixar o servidor wildfly   
-     $ curl -OL https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz
+     $ curl -OL https://download.jboss.org/wildfly/20.0.1.Final/wildfly-20.0.1.Final.tar.gz
 12 - Descompactar e mover os arquivos para pasta /opt
     $ tar -xf wildfly-19.1.0.Final.tar.gz -C /opt/
 13 - Confirgurar servidor
@@ -73,7 +73,7 @@ Na maquina pipeline
       $ vim standalone/configuration/standalone.xml
       Digitar o comando shift+G para ir para o final do arquivo
         digitar o comando
-         :%s/127.0.0.1/{{ENDERECO_SERVIDOR}}/g(Endereo do servidor)   no caso   192.168.88.30 
+         :%s/127.0.0.1/{{ENDERECO_SERVIDOR}}/g(Endereo do servidor)   no caso   192.168.88.40
     Adicionar Usuario
       $ ./bin/add-user.sh
       What type of user do you wish to add? 

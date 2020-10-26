@@ -1,0 +1,119 @@
+1 - Configurar Senha para usuario na maquina homolog
+  $ passwd
+    Enter new UNIX password: {{NOVA_SENHA}}
+    Retype new UNIX password: {{CONFIRMAR_SENHA}}
+    passwd: password updated successfully
+
+2 - Criar par de chaves ssh na homolog
+  $ ssh-keygen -t rsa -b 4096 -N ''  -f /root/.ssh/id_rsa
+3 - Copiar chave privada
+
+4 - Ir no servidor Jenkins
+    Jenkins -> Manage Jenkins -> Manage Credentials
+      Stores scoped to Jenkins
+        Clicar em Global
+          Add Credentials
+             	Kind: SSH UserName with private key
+              Scope:
+              Id:
+              Description:
+              Username: {{Usuario usado para criar as chave}}
+              Private: selecionar -> Enter directly -> Add -> colar a chave copiada
+          OK    
+5 - Realizar o authorized_keys na maquina homolog
+  $ cp id_rsa.pub authorized_keys
+6 - No Jenkins ir em
+    Jenkins -> Manage Jenkins -> Manage Plugins -> Avaliable -> Buscar o plugin "SSH Agent" clilar em Install without restart   
+7 - Pegar hash das credenciais
+  No Jenkins ir em:
+    Jenkins -> Manage Jenkins -> Manage Credentials
+      Copiar item da coluna "ID" da chave do servidor de Homologação
+
+Na maquina production 
+8 - Configurar Senha para usuario na maquina production
+  $ passwd
+    Enter new UNIX password: {{NOVA_SENHA}}
+    Retype new UNIX password: {{CONFIRMAR_SENHA}}
+    passwd: password updated successfully
+
+9 - Criar par de chaves ssh na production
+  $ ssh-keygen -t rsa -b 4096 -N ''  -f /root/.ssh/id_rsa
+
+10 - Copiar chave privada
+
+11 - Ir no servidor Jenkins
+    Jenkins -> Manage Jenkins -> Manage Credentials
+      Stores scoped to Jenkins
+        Clicar em Global
+          Add Credentials
+             	Kind: SSH UserName with private key
+              Scope:
+              Id:
+              Description:
+              Username: {{Usuario usado para criar as chave}}
+              Private: selecionar -> Enter directly -> Add -> colar a chave copiada
+          OK    
+12 - Realizar o authorized_keys na maquina homolog
+  $ cp id_rsa.pub authorized_keys
+  
+14 - Pegar hash das credenciais
+  No Jenkins ir em:
+    Jenkins -> Manage Jenkins -> Manage Credentials
+      Copiar item da coluna "ID" da chave do servidor de Homologação
+
+15 - Intalar o Java 
+    $ sudo apt install openjdk-8-jdk vim git -y
+
+16 - Baixar o servidor wildfly   
+     $ curl -OL https://download.jboss.org/wildfly/19.1.0.Final/wildfly-19.1.0.Final.tar.gz
+12 - Descompactar e mover os arquivos para pasta /opt
+    $ tar -xf wildfly-19.1.0.Final.tar.gz -C /opt/
+13 - Confirgurar servidor
+    Ir para a pasta 
+      $ cd /opt/wildfly-19.1.0.Final/
+    Editar o arquivo
+      $ vim standalone/configuration/standalone.xml
+      Digitar o comando shift+G para ir para o final do arquivo
+        digitar o comando
+         :%s/127.0.0.1/{{ENDERECO_SERVIDOR}}/g(Endereo do servidor)   no caso   192.168.88.30 
+    Adicionar Usuario
+      $ ./bin/add-user.sh
+      What type of user do you wish to add? 
+        a) Management User (mgmt-users.properties) 
+        b) Application User (application-users.properties) 
+        (a): a
+      Enter the details of the new user to add.
+        Using realm 'ManagementRealm' as discovered from the existing property files.
+        Username : admin
+      User 'admin' already exists and is disabled, would you like to... 
+        a) Update the existing user password and roles 
+        b) Enable the existing user 
+        c) Type a new username
+        (a): a
+      Password recommendations are listed below. To modify these restrictions edit the add-user.properties configuration file.
+        - The password should be different from the username
+        - The password should not be one of the following restricted values {root, admin, administrator}
+        - The password should contain at least 8 characters, 1 alphabetic character(s), 1 digit(s), 1 non-alphanumeric symbol(s)
+        Password :  {{DIGITAR_SENHA}}
+        WFLYDM0102: Password should have at least 1 non-alphanumeric symbol.
+        Are you sure you want to use the password entered yes/no? yes
+      Re-enter Password : {{CONFIRMAR_SENHA}} 
+      What groups do you want this user to belong to? (Please enter a comma separated list, or leave blank for none)[  ]: {{DEFINIR GRUPO EM BRANCO}}
+      Is this new user going to be used for one AS process to connect to another AS process? 
+        e.g. for a slave host controller connecting to the master or for a Remoting connection for server to server EJB calls.
+        yes/no? no {{DESLIGAR EJB}}
+    Iniciar servidor    
+      $./bin/standalone.sh
+    Acessar o Endereco do servidor      
+
+
+
+
+    Criando Docker do banco de dados
+docker run -p 5432:5432 --name postgresdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=caredb -d postgres:10.7-alpine
+
+Criar Rede para Conectar container do banco com da aplicacap
+docker network create postgresnetwork
+
+Conectar Container a rede criada
+docker network connect postgresnetwork postgresdb
